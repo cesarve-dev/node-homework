@@ -8,7 +8,7 @@ emitter.on("time", (time) => {
 //testing
 // emitter.emit("time", new Date().toString());
 
-setTimeout(() => {
+setInterval(() => {
   emitter.emit("time", new Date().toString());
 }, 5000);
 
