@@ -3,6 +3,7 @@ const { v4: uuidv4 } = require("uuid");
 const path = require("path");
 const dogsRouter = require("./routes/dogs");
 const { StatusCodes } = require("http-status-codes");
+// const { ValidationError } = require("../error.js");
 
 const app = express();
 
@@ -26,12 +27,12 @@ app.use((req, res, next) => {
   next();
 });
 
-app.use(express.json({ limit: "1kb" }));
+app.use(express.json({ limit: "1mb" }));
 
 app.use((req, res, next) => {
   if (req.method === "POST" && !req.is("application/json")) {
-    return res.status(StatusCodes.BAD_REQUEST).json({
-      error: "Content-type must be application/json",
+    return res.status(400).json({
+      error: "Content-Type must be application/json",
       requestId: req.requestId,
     });
   }
@@ -44,16 +45,18 @@ app.use("/images", express.static(path.join(__dirname, "public", "images")));
 app.use("/", dogsRouter); // Do not remove this line
 
 app.use((error, req, res, next) => {
-  if (!error.statusCode) {
-    return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
-      message: "An internal server error occurred.",
-      requestId: req.requestId,
-    });
+  const statusCode = error.statusCode || 500;
+
+  if (statusCode >= 400 && statusCode < 500) {
+    console.warn(`WARN: ${error.name} ${error.message}`);
+  } else {
+    console.error(`ERROR: Error ${error.message}`);
   }
 
-  return res
-    .status(error.statusCode)
-    .json({ error: error.message, requestId: req.requestId });
+  return res.status(statusCode).json({
+    error: statusCode >= 500 ? "Internal Server Error" : error.message,
+    requestId: req.requestId,
+  });
 });
 
 app.use((req, res) => {
@@ -65,4 +68,5 @@ app.use((req, res) => {
 const server = app.listen(3000, () =>
   console.log("Server listening on port 3000"),
 );
+
 module.exports = server;
