@@ -2,6 +2,14 @@ const express = require("express");
 const errorHandler = require("./middleware/error-handler");
 const notFound = require("./middleware/not-found");
 const app = express();
+// const { register, logOn } = require("./controllers/userController");
+const userRouter = require("./routes/userRoutes");
+
+global.user_id = null;
+global.users = [];
+global.tasks = [];
+
+app.use(express.json({ limit: "1kb" }));
 
 app.use((req, res, next) => {
   console.log(
@@ -11,17 +19,23 @@ app.use((req, res, next) => {
 });
 
 app.get("/", (req, res) => {
-  res.send("Hello, World!");
+  // res.send("Hello, World!");
+  res.json({ message: "Hello, World!" });
   // throw new Error("somehting bad happened");
 });
 
 app.post("/testpost", (req, res) => {
-  res.send("This is a test post.");
+  // res.send("This is a test post.");
+  res.json({ message: "This is a test post." });
 });
+
+// app.post("/api/users/register", register);
+app.use("/api/users", userRouter);
 
 app.use(notFound);
 app.use(errorHandler);
 
+// PORT
 const port = process.env.PORT || 3000;
 const server = app.listen(port, () =>
   console.log(`Server is listening on port ${port}...`),
