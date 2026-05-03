@@ -4,6 +4,8 @@ const notFound = require("./middleware/not-found");
 const app = express();
 // const { register, logOn } = require("./controllers/userController");
 const userRouter = require("./routes/userRoutes");
+const authMiddleware = require("./middleware/auth");
+const taskRouter = require("./routes/taskRoutes");
 
 global.user_id = null;
 global.users = [];
@@ -19,9 +21,7 @@ app.use((req, res, next) => {
 });
 
 app.get("/", (req, res) => {
-  // res.send("Hello, World!");
   res.json({ message: "Hello, World!" });
-  // throw new Error("somehting bad happened");
 });
 
 app.post("/testpost", (req, res) => {
@@ -29,8 +29,8 @@ app.post("/testpost", (req, res) => {
   res.json({ message: "This is a test post." });
 });
 
-// app.post("/api/users/register", register);
 app.use("/api/users", userRouter);
+app.use("/api/tasks", authMiddleware, taskRouter);
 
 app.use(notFound);
 app.use(errorHandler);

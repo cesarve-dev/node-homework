@@ -1,18 +1,40 @@
 const StatusCodes = require("http-status-codes");
+const crypto = require("crypto");
+const util = require("util");
+const scrypt = util.promisify(crypto.scrypt);
 
-const register = (req, res) => {
-  const newUser = { ...req.body };
+async function hashPassword(password) {
+  const salt = crypto.randomBytes(16).toString("hex");
+  const derivedKey = await scrypt(password, salt, 64);
+  return `${salt}:${derivedKey.toString("hex")}`;
+}
+
+async function comparePassword(inputPassword, storedHash) {
+  const [salt, key] = storedHash.split(":");
+  const keyBuffer = Buffer.from(key, "hex");
+  const derivedKey = await scrypt(inputPassword, salt, 64);
+  return crypto.timingSafeEqual(keyBuffer, derivedKey);
+}
+
+const register = async (req, res) => {
+  const { name, email, password } = req.body;
+  const hashedPass = await hashPassword(password);
+  const newUser = { name, email, hashedPass };
   global.users.push(newUser);
   global.user_id = newUser;
   // delete newUser.password;
-  res.status(StatusCodes.CREATED).json(newUser);
+
+  res.status(StatusCodes.CREATED).json({ name, email });
 };
 
-const logon = (req, res) => {
+const logon = async (req, res) => {
   const { email, password } = req.body;
   const existingUser = global.users.find((user) => user.email === email);
 
-  if (!existingUser || existingUser.password !== password) {
+  if (
+    !existingUser ||
+    !(await comparePassword(password, existingUser.hashedPass))
+  ) {
     return res
       .status(StatusCodes.UNAUTHORIZED)
       .json({ message: "Authentication Failed" });
