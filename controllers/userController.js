@@ -2,6 +2,7 @@ const StatusCodes = require("http-status-codes");
 const crypto = require("crypto");
 const util = require("util");
 const scrypt = util.promisify(crypto.scrypt);
+const { userSchema } = require("../validation/userSchema");
 
 async function hashPassword(password) {
   const salt = crypto.randomBytes(16).toString("hex");
@@ -17,12 +18,16 @@ async function comparePassword(inputPassword, storedHash) {
 }
 
 const register = async (req, res) => {
-  const { name, email, password } = req.body;
+  if (!req.body) req.body = {};
+  const { error, value } = userSchema.validate(req.body);
+  if (error) {
+    return res.status(StatusCodes.BAD_REQUEST).json({ message: error.message });
+  }
+  const { name, email, password } = value;
   const hashedPass = await hashPassword(password);
   const newUser = { name, email, hashedPass };
   global.users.push(newUser);
   global.user_id = newUser;
-  // delete newUser.password;
 
   res.status(StatusCodes.CREATED).json({ name, email });
 };

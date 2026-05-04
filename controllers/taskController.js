@@ -1,3 +1,6 @@
+const { StatusCodes } = require("http-status-codes");
+const { taskSchema, patchTaskSchema } = require("../validation/taskSchema");
+
 const taskCounter = (() => {
   let lastTaskNumber = 0;
   return () => {
@@ -7,9 +10,13 @@ const taskCounter = (() => {
 })();
 
 const create = (req, res) => {
+  if (!req.body) req.body = {};
+  const { error, value } = taskSchema.validate(req.body);
+  if (error) {
+    return res.status(StatusCodes.BAD_REQUEST).json({ message: error.message });
+  }
   const newTask = {
-    isCompleted: false,
-    ...req.body,
+    ...value,
     id: taskCounter(),
     userId: global.user_id.email,
   };
@@ -70,7 +77,13 @@ const update = (req, res) => {
     return res.status(404).json({ message: "Task was not found." });
   }
 
-  Object.assign(currentTask, req.body);
+  if (!req.body) req.body = {};
+  const { error, value } = patchTaskSchema.validate(req.body);
+  if (error) {
+    return res.status(StatusCodes.BAD_REQUEST).json({ message: error.message });
+  }
+
+  Object.assign(currentTask, value);
   const { userId, ...sanitizedTask } = currentTask;
   return res.status(200).json(sanitizedTask);
 };
