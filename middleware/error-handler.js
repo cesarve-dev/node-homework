@@ -1,6 +1,10 @@
 const { StatusCodes } = require("http-status-codes");
 
 const errorHandlerMiddleware = (err, req, res, next) => {
+  if (err.name === "PrismaClientInitializationError") {
+    console.error("Couldn't connect to the database. Is it running?");
+  }
+
   console.error(
     "Internal server error: ",
     err.constructor.name,
