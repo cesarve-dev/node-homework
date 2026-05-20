@@ -7,6 +7,6 @@ if (!process.env.NODE_ENV || process.env.NODE_ENV === "development") {
   opts = {};
 }
 
-const prisma = new PrismaClient();
+const prisma = new PrismaClient(opts);
 
 module.exports = prisma;

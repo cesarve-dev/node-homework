@@ -33,7 +33,7 @@ app.get("/health", async (req, res) => {
   } catch (err) {
     res
       .status(500)
-      .json({ status: "error", db: "bit cibeected", error: err.message });
+      .json({ status: "error", db: "not connected", error: err.message });
   }
 });
 
