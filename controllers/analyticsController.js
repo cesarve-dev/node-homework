@@ -49,7 +49,8 @@ const getUserAnalytics = async (req, res) => {
   const oneWeekAgo = new Date();
   oneWeekAgo.setDate(oneWeekAgo.getDate() - 7);
   // Then use groupBy with a where clause filtering by createdAt >= oneWeekAgo
-  const weeklyProgress = await prisma.task.groupBy({
+
+  const weeklyProgressRaw = await prisma.task.groupBy({
     by: ["createdAt"],
     where: {
       userId,
@@ -57,6 +58,11 @@ const getUserAnalytics = async (req, res) => {
     },
     _count: { id: true },
   });
+
+  const weeklyProgress = weeklyProgressRaw.map((entry) => ({
+    createdAt: entry.createdAt.toISOString().split("T")[0],
+    _count: { id: entry._count.id },
+  }));
 
   // Return response with taskStats, recentTasks, and weeklyProgress
   res.status(200).json({

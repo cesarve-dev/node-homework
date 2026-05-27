@@ -124,14 +124,14 @@ const index = async (req, res) => {
 };
 
 const show = async (req, res, next) => {
-  const userId = parseInt(req.params?.id);
-  if (isNaN(userId)) {
-    return res.status(400).json({ error: "Invalid user ID" });
+  const taskId = parseInt(req.params?.id);
+  if (isNaN(taskId)) {
+    return res.status(400).json({ error: "Invalid task ID" });
   }
 
   try {
     const task = await prisma.task.findUnique({
-      where: { id: userId },
+      where: { id: taskId, userId: global.user_id },
       select: {
         id: true,
         title: true,
