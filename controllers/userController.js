@@ -4,6 +4,7 @@ const util = require("util");
 const scrypt = util.promisify(crypto.scrypt);
 const { userSchema } = require("../validation/userSchema");
 const pool = require("../db/pg-pool");
+const prisma = require("../db/prisma");
 
 async function hashPassword(password) {
   const salt = crypto.randomBytes(16).toString("hex");
@@ -29,44 +30,50 @@ const register = async (req, res, next) => {
 
   let user = null;
   value.hashed_password = await hashPassword(value.password);
+  delete value.password;
 
   try {
-    user = await pool.query(
-      `INSERT INTO users (email, name, hashed_password) 
-      VALUES ($1, $2, $3) RETURNING id, email, name`,
-      [value.email, value.name, value.hashed_password],
-    ); // note that you use a parameterized query
-  } catch (e) {
+    user = await prisma.user.create({
+      data: {
+        name: value.name,
+        email: value.email,
+        hashedPassword: value.hashed_password,
+      },
+      select: { name: true, email: true, id: true }, // specify the column values to return
+    });
+  } catch (err) {
     // the email might already be registered
-    if (e.code === "23505") {
-      return res.status(400).json({ message: e.message });
+    if (err.name === "PrismaClientKnownRequestError" && err.code === "P2002") {
+      return res.status(400).json({ message: err.message });
+    } else {
+      return next(err);
     }
-    return next(e); // all other errors get passed to the error handler
   }
-  global.user_id = user.rows[0].id;
+  global.user_id = user.id;
 
-  res
-    .status(StatusCodes.CREATED)
-    .json({ name: user.rows[0].name, email: user.rows[0].email });
+  res.status(StatusCodes.CREATED).json({ name: user.name, email: user.email });
 };
 
 const logon = async (req, res, next) => {
   const { email, password } = req.body;
-  const result = await pool.query("SELECT * FROM users WHERE email = $1", [
-    email,
-  ]);
-  const existingUser = result.rows[0];
+  const lowerEmail = email.toLowerCase();
+  // const result = await pool.query("SELECT * FROM users WHERE email = $1", [
+  //   email,
+  // ]);
+  const existingUser = await prisma.user.findUnique({
+    where: { email: lowerEmail },
+  });
 
   if (
     !existingUser ||
-    !(await comparePassword(password, existingUser.hashed_password))
+    !(await comparePassword(password, existingUser.hashedPassword))
   ) {
     return res
       .status(StatusCodes.UNAUTHORIZED)
       .json({ message: "Authentication Failed" });
   }
 
-  global.user_id = result.rows[0].id;
+  global.user_id = existingUser.id;
   res.status(StatusCodes.OK).json({
     message: "User verified",
     name: existingUser.name,
