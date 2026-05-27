@@ -96,10 +96,6 @@ const index = async (req, res) => {
     orderBy: getOrderBy(req.query),
   });
 
-  if (tasks.length === 0) {
-    return res.status(404).json({ message: "No tasks found." });
-  }
-
   // Get total count for pagination metadata
   const totalTasks = await prisma.task.count({
     where: whereClause,
