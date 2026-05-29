@@ -8,6 +8,7 @@ const authMiddleware = require("./middleware/auth");
 const taskRouter = require("./routes/taskRoutes");
 const pool = require("./db/pg-pool");
 const prisma = require("./db/prisma");
+const analyticsRoutes = require("./routes/analyticsRoute");
 
 global.user_id = null;
 global.users = [];
@@ -44,6 +45,7 @@ app.post("/testpost", (req, res) => {
 
 app.use("/api/users", userRouter);
 app.use("/api/tasks", authMiddleware, taskRouter);
+app.use("/api/analytics", authMiddleware, analyticsRoutes);
 
 app.use(notFound);
 app.use(errorHandler);
