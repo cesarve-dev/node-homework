@@ -15,7 +15,7 @@ const create = async (req, res) => {
       title: value.title,
       isCompleted: value.isCompleted,
       priority: value.priority,
-      userId: global.user_id,
+      userId: req.user.id,
     },
     select: { id: true, title: true, isCompleted: true, priority: true },
   });
@@ -28,7 +28,7 @@ const index = async (req, res) => {
   const page = parseInt(req.query.page) || 1;
   const limit = parseInt(req.query.limit) || 10;
   const skip = (page - 1) * limit;
-  const whereClause = { userId: global.user_id };
+  const whereClause = { userId: req.user.id };
   const validPriorities = ["low", "medium", "high"];
   const { min_date } = req.query;
   const { max_date } = req.query;
@@ -127,7 +127,7 @@ const show = async (req, res, next) => {
 
   try {
     const task = await prisma.task.findUnique({
-      where: { id: taskId, userId: global.user_id },
+      where: { id: taskId, userId: req.user.id },
       select: {
         id: true,
         title: true,
@@ -163,7 +163,7 @@ const update = async (req, res, next) => {
       data: value,
       where: {
         id: taskToFind,
-        userId: global.user_id,
+        userId: req.user.id,
       },
       select: { title: true, isCompleted: true, id: true, priority: true },
     });
@@ -187,7 +187,7 @@ const deleteTask = async (req, res, next) => {
 
   try {
     const deletedTask = await prisma.task.delete({
-      where: { id: taskToFind, userId: global.user_id },
+      where: { id: taskToFind, userId: req.user.id },
       select: { title: true, id: true, isCompleted: true },
     });
     return res.status(200).json(deletedTask);
@@ -223,7 +223,7 @@ const bulkCreate = async (req, res, next) => {
       title: value.title,
       isCompleted: value.isCompleted || false,
       priority: value.priority || "medium",
-      userId: global.user_id,
+      userId: req.user.id,
     });
   }
 
