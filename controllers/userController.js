@@ -3,8 +3,26 @@ const crypto = require("crypto");
 const util = require("util");
 const scrypt = util.promisify(crypto.scrypt);
 const { userSchema } = require("../validation/userSchema");
-const pool = require("../db/pg-pool");
 const prisma = require("../db/prisma");
+const { randomUUID } = require("crypto");
+const jwt = require("jsonwebtoken");
+
+const cookieFlags = (req) => {
+  return {
+    httpOnly: true,
+    secure: process.env.NODE_ENV === "production", // only when HTTPS is available
+    sameSite: "Strict",
+  };
+};
+
+const setJwtCookie = (req, res, user) => {
+  // Sign JWT
+  const payload = { id: user.id, csrfToken: randomUUID() };
+  const token = jwt.sign(payload, process.env.JWT_SECRET, { expiresIn: "1h" }); // 1 hour expiration
+  // Set cookie.  Note that the cookie flags have to be different in production and in test.
+  res.cookie("jwt", token, { ...cookieFlags(req), maxAge: 3600000 }); // 1 hour expiration
+  return payload.csrfToken; // this is needed in the body returned by logon() or register()
+};
 
 async function hashPassword(password) {
   const salt = crypto.randomBytes(16).toString("hex");
@@ -33,14 +51,6 @@ const register = async (req, res, next) => {
   delete value.password;
 
   try {
-    // user = await prisma.user.create({
-    //   data: {
-    //     name: value.name,
-    //     email: value.email,
-    //     hashedPassword: value.hashedPassword,
-    //   },
-    //   select: { name: true, email: true, id: true }, // specify the column values to return
-    // });
     const result = await prisma.$transaction(async (tx) => {
       // Create user account (similar to Assignment 6, but using tx instead of prisma)
       const newUser = await tx.user.create({
@@ -82,10 +92,11 @@ const register = async (req, res, next) => {
       return { user: newUser, welcomeTasks };
     });
 
-    global.user_id = result.user.id;
+    const csrfToken = setJwtCookie(req, res, result.user);
 
     res.status(201).json({
-      user: result.user,
+      user: { name: result.user.name, email: result.user.email },
+      csrfToken,
       welcomeTasks: result.welcomeTasks,
       transactionStatus: "success",
     });
@@ -126,16 +137,18 @@ const logon = async (req, res, next) => {
       .json({ message: "Authentication Failed" });
   }
 
-  global.user_id = existingUser.id;
+  const csrfToken = setJwtCookie(req, res, existingUser);
+
   res.status(StatusCodes.OK).json({
-    message: "User verified",
     name: existingUser.name,
     email: existingUser.email,
+    csrfToken,
+    message: "User verified",
   });
 };
 
 const logoff = (req, res) => {
-  global.user_id = null;
+  res.clearCookie("jwt", cookieFlags(req));
   return res.status(StatusCodes.OK).json({ message: "User log off." });
 };
 
