@@ -11,6 +11,7 @@ const cookieParser = require("cookie-parser");
 const helmet = require("helmet");
 const { xss } = require("express-xss-sanitizer");
 const rateLimiter = require("express-rate-limit");
+// const cors = require("cors");
 const app = express();
 app.set("trust proxy", 1);
 
@@ -24,7 +25,8 @@ app.use(
 app.use(express.json({ limit: "1kb" }));
 app.use(cookieParser());
 app.use(helmet());
-app.use(xss());
+app.use(xss()); //sanitize req.body
+// app.user(cors({ credentials: true, origin: true }));
 
 app.use((req, res, next) => {
   console.log(
