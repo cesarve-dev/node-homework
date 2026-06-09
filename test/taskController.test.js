@@ -127,11 +127,10 @@ describe("test getting created tasks", () => {
   it("25. If you get the list of tasks using the userId from user2, you get a 404.", async () => {
     const req = httpMocks.createRequest({
       method: "GET",
-      params: { id: saveTaskId },
     });
     req.user = { id: user2.id };
     saveRes = httpMocks.createResponse({ eventEmitter: EventEmitter });
-    await waitForRouteHandlerCompletion(show, req, saveRes);
+    await waitForRouteHandlerCompletion(index, req, saveRes);
     expect(saveRes.statusCode).toBe(404);
   });
   it("26. You can retrieve the created task using show().", async () => {
