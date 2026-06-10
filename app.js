@@ -22,7 +22,7 @@ app.use(
   }),
 );
 
-app.use(express.json({ limit: "1kb" }));
+app.use(express.json({ limit: "1mb" }));
 app.use(cookieParser());
 app.use(helmet());
 app.use(xss()); //sanitize req.body
