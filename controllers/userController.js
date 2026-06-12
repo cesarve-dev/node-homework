@@ -72,7 +72,7 @@ const register = async (req, res, next) => {
   }
   if (!isPerson) {
     return res.status(StatusCodes.BAD_REQUEST).json({
-      message: "Bot verification failed. Please complete the reCAPTCHA.",
+      message: "We can't tell if you're a person or a bot.",
     });
   }
 
