@@ -101,6 +101,10 @@ const index = async (req, res) => {
     where: whereClause,
   });
 
+  if (tasks.length === 0) {
+    return res.status(404).json({ message: "No tasks found." });
+  }
+
   // Build pagination object with complete metadata
   // Hint: The test expects page, limit, total, pages, hasNext, hasPrev
   // Use Math.ceil() to calculate pages, and compare page * limit with total for hasNext
