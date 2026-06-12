@@ -6,6 +6,7 @@ const { userSchema } = require("../validation/userSchema");
 const prisma = require("../db/prisma");
 const { randomUUID } = require("crypto");
 const jwt = require("jsonwebtoken");
+const { OAuth2Client } = require("google-auth-library");
 
 const cookieFlags = (req) => {
   return {
@@ -36,6 +37,52 @@ async function comparePassword(inputPassword, storedHash) {
   const derivedKey = await scrypt(inputPassword, salt, 64);
   return crypto.timingSafeEqual(keyBuffer, derivedKey);
 }
+
+const googleLogon = async (req, res, next) => {
+  const { code } = req.body;
+  if (!code) {
+    return res.status(400).json({ message: "No uthorization code provided." });
+  }
+
+  try {
+    const client = new OAuth2Client(
+      process.env.GOOGLE_CLIENT_ID,
+      process.env.GOOGLE_CLIENT_SECRET,
+      "postmessage",
+    );
+    const { tokens } = await client.getToken(code);
+    const ticket = await client.verifyIdToken({
+      idToken: tokens.id_token,
+      audience: process.env.GOOGLE_CLIENT_ID,
+    });
+    const { sub: googleId, email, name } = ticket.getPayload();
+    const existingUser = await prisma.user.findUnique({
+      where: { email },
+      select: { id: true, name: true, email: true },
+    });
+
+    if (existingUser) {
+      const csrfToken = setJwtCookie(req, res, existingUser);
+      return res.status(200).json({ name: existingUser.name, csrfToken });
+    }
+
+    const newUser = await prisma.user.create({
+      data: {
+        email,
+        name,
+        hashedPassword: `google:${googleId}`,
+      },
+      select: { id: true, name: true, email: true },
+    });
+    const csrfToken = setJwtCookie(req, res, newUser);
+    return res.status(201).json({
+      user: { name: newUser.name, email: newUser.email },
+      csrfToken,
+    });
+  } catch (err) {
+    return next(err);
+  }
+};
 
 const register = async (req, res, next) => {
   if (!req.body) req.body = {};
@@ -189,4 +236,4 @@ const logoff = (req, res) => {
   return res.status(StatusCodes.OK).json({ message: "User log off." });
 };
 
-module.exports = { register, logon, logoff };
+module.exports = { register, logon, logoff, googleLogon };

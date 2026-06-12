@@ -315,6 +315,14 @@ git checkout -b assignment2
 
 The front-end repository can be found [here](https://github.com/cesarve-dev/node-essentials-front-end)
 
+## reCAPTCHA Bypass value
+
+```
+RECAPTCHA_BYPASS=YEFmSXaRh5ftzlx
+```
+
+Check .env.example for set up of variables
+
 ## Good Luck With the Class, and Happy Coding!
 
 ## License
