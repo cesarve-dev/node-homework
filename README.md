@@ -214,9 +214,12 @@ Last thing, you need to create a _**.env**_ file in the root of the `node-homewo
 <summary>The .env file for the Mac</summary>
 
 ```
-DB_URL=postgresql://<username>@localhost/nodehomework?host=/tmp
-DATABASE_URL=postgresql://<username>@localhost/tasklist?host=/tmp
-TEST_DATABASE_URL=postgresql://<username>@localhost/testtasklist?host=/tmp
+DB_URL=postgresql://zesc@localhost/nodehomework?host=/tmp
+DATABASE_URL=postgresql://neondb_owner:npg_a8YKTuIBgME1@ep-little-breeze-a6wf3hc4.us-west-2.aws.neon.tech/neondb?sslmode=require
+TEST_DATABASE_URL=postgresql://zesc@localhost/testtasklist?host=/tmp
+JWT_SECRET=fMXqCYweFpDP8Z9gMCR9
+RECAPTCHA_SECRET=6Le-VBYtAAAAAN60MU4oWOKLLblK_4KPTdfW2_TY
+RECAPTCHA_BYPASS=YEFmSXaRh5ftzlx
 ```
 
 </details>
@@ -307,6 +310,10 @@ git checkout -b assignment2
 - Usual Express files (e.g., `app.js`, `routes/`, `controllers/`, `utils/`, `models/`, `tests/`, etc.) will be present in the root or as needed for the Node/Express app.
 - `package.json`: Single package file for the whole project.
 - The repository is structured for cloud deployment.
+
+## Front-end React Application
+
+The front-end repository can be found [here](https://github.com/cesarve-dev/node-essentials-front-end)
 
 ## Good Luck With the Class, and Happy Coding!
 

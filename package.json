@@ -26,7 +26,9 @@
     "http-status-codes": "^2.3.0",
     "joi": "^18.1.2",
     "jsonwebtoken": "^9.0.3",
-    "prisma": "^6.19.3"
+    "prisma": "^6.19.3",
+    "pg": "^8.20.0",
+    "pg-cursor": "^2.13.1"
   },
   "devDependencies": {
     "@eslint/js": "^9.24.0",
@@ -39,8 +41,6 @@
     "jest": "^30.4.2",
     "node-mocks-http": "^1.17.2",
     "nodemon": "^3.1.14",
-    "pg": "^8.20.0",
-    "pg-cursor": "^2.13.1",
     "prettier": "^3.7.4",
     "supertest": "^7.2.2",
     "uuid": "^14.0.0"
