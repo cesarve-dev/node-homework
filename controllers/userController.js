@@ -66,17 +66,59 @@ const googleLogon = async (req, res, next) => {
       return res.status(200).json({ name: existingUser.name, csrfToken });
     }
 
-    const newUser = await prisma.user.create({
-      data: {
-        email,
-        name,
-        hashedPassword: `google:${googleId}`,
-      },
-      select: { id: true, name: true, email: true },
+    //add a transanction for new user, similar to register function.
+    // const newUser = await prisma.user.create({
+    //   data: {
+    //     email,
+    //     name,
+    //     hashedPassword: `google:${googleId}`,
+    //   },
+    //   select: { id: true, name: true, email: true },
+    // });
+
+    const result = await prisma.$transaction(async (tx) => {
+      // Create user account (similar to Assignment 6, but using tx instead of prisma)
+      const newUser = await tx.user.create({
+        data: {
+          email: value.email,
+          name: value.name,
+          hashedPassword: value.hashedPassword,
+        },
+        select: { id: true, email: true, name: true, createdAt: true },
+      });
+
+      // Create 3 welcome tasks using createMany
+      const welcomeTaskData = [
+        {
+          title: "Complete your profile",
+          userId: newUser.id,
+          priority: "medium",
+        },
+        { title: "Add your first task", userId: newUser.id, priority: "high" },
+        { title: "Explore the app", userId: newUser.id, priority: "low" },
+      ];
+      await tx.task.createMany({ data: welcomeTaskData });
+
+      // Fetch the created tasks to return them
+      const welcomeTasks = await tx.task.findMany({
+        where: {
+          userId: newUser.id,
+          title: { in: welcomeTaskData.map((t) => t.title) },
+        },
+        select: {
+          id: true,
+          title: true,
+          isCompleted: true,
+          userId: true,
+          priority: true,
+        },
+      });
+
+      return { user: newUser, welcomeTasks };
     });
-    const csrfToken = setJwtCookie(req, res, newUser);
+    const csrfToken = setJwtCookie(req, res, result.user);
     return res.status(201).json({
-      user: { name: newUser.name, email: newUser.email },
+      user: { name: result.user.name, email: result.user.email },
       csrfToken,
     });
   } catch (err) {
