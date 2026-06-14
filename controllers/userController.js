@@ -80,9 +80,9 @@ const googleLogon = async (req, res, next) => {
       // Create user account (similar to Assignment 6, but using tx instead of prisma)
       const newUser = await tx.user.create({
         data: {
-          email: value.email,
-          name: value.name,
-          hashedPassword: value.hashedPassword,
+          email: email,
+          name: name,
+          hashedPassword: `google:${googleId}`,
         },
         select: { id: true, email: true, name: true, createdAt: true },
       });
