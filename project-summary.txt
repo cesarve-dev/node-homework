@@ -1,1 +1,6 @@
+
 Render URL: https://node-homework-zf5p.onrender.com
+
+Front-end connection details in readme file
+
+Extra feauture: OAuth authentification with Google

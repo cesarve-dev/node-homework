@@ -2,7 +2,7 @@
 
 This is a todo tasks React application for the front-end and Cloud databse and web server for the back-end. This allow multiple user to use the application. This project is part of Code The Dream - Node 26.2 class
 
-# Features
+## Features
 
 - Google OAuth register/login: You can use your google account to register or log in into the application.
 - Register/login
@@ -10,7 +10,7 @@ This is a todo tasks React application for the front-end and Cloud databse and w
 - CSRF protection
 - reCAPTCHA verification
 
-# Tech Stack
+## Tech Stack
 
 - Node.js
 - Express
@@ -20,6 +20,10 @@ This is a todo tasks React application for the front-end and Cloud databse and w
 - Google OAuth
 - reCAPTCHA
 - Web server (render.com)
+
+## Deploy back end link
+
+[back-end web server](https://node-homework-zf5p.onrender.com)
 
 # Getting Started with Node Development
 
@@ -334,17 +338,47 @@ git checkout -b assignment2
 - `package.json`: Single package file for the whole project.
 - The repository is structured for cloud deployment.
 
-## Front-end React Application
+# Front-end React Application
 
 The front-end repository can be found [here](https://github.com/cesarve-dev/node-essentials-front-end)
 
-## reCAPTCHA Bypass value
+## Install dependencies
+
+Clode repo in a different foler. Then:
+
+```
+cd node-essentials-front-end
+npm install
+```
+
+# Set up .env file in fron-end folder
+
+Check .env.example for set up of variables
+
+```
+VITE_TARGET=https://node-homework-zf5p.onrender.com
+VITE_GOOGLE_CLIENT_ID=your_google_client_id
+VITE_RECAPTCHA_SITE_KEY=your_recaptcha_site_key
+```
+
+Note:
+
+- VITE_TARGET points to back-end on Render.
+- VITE_GOOGLE_CLIENT_ID must match the GOOGLE_CLIENT_ID on the back-end, otherwise singing up with google witll throw a error "unauthorized_client"
+
+# Run front-end
+
+```
+npm run dev
+```
+
+app will be available on at: http://localhost:3001
+
+## reCAPTCHA Bypass value on back-end
 
 ```
 RECAPTCHA_BYPASS=YEFmSXaRh5ftzlx
 ```
-
-Check .env.example for set up of variables
 
 ## Good Luck With the Class, and Happy Coding!
 
