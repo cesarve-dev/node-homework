@@ -26,7 +26,10 @@ describe("register a user ", () => {
       email: "jdeere@example.com",
       password: "Pa$$word20",
     };
-    saveRes = await agent.post("/api/users/register").send(newUser);
+    saveRes = await agent
+      .post("/api/users/register")
+      .set("X-Recaptcha-Test", process.env.RECAPTCHA_BYPASS)
+      .send(newUser);
     expect(saveRes.status).toBe(201);
   });
   it("47. Registration returns an object with the expected name.", async () => {

@@ -1,3 +1,30 @@
+# Project Overview and purpose
+
+This is a todo tasks React application for the front-end and Cloud databse and web server for the back-end. This allow multiple user to use the application. This project is part of Code The Dream - Node 26.2 class
+
+## Features
+
+- Google OAuth register/login: You can use your google account to register or log in into the application.
+- Register/login
+- JWT authentication
+- CSRF protection
+- reCAPTCHA verification
+
+## Tech Stack
+
+- Node.js
+- Express
+- Prisma
+- PostgreSQL (neon.tech)
+- JWT (jason web token)
+- Google OAuth
+- reCAPTCHA
+- Web server (render.com)
+
+## Deploy back end link
+
+[back-end web server](https://node-homework-zf5p.onrender.com)
+
 # Getting Started with Node Development
 
 Welcome to Code the Dream’s Node/Express class! You will be learning Node.js, an implementation of the JavaScript engine that runs standalone or as a web server. This page describes how to begin. You can develop Node applications on MacOS, Linux, or Windows. If you are developing on Windows, there is no need to do development in a virtual machine, as Node development works fine in Windows native environments, but you can use the Windows Subsystem for Linux if you prefer. You will need to install:
@@ -214,9 +241,12 @@ Last thing, you need to create a _**.env**_ file in the root of the `node-homewo
 <summary>The .env file for the Mac</summary>
 
 ```
-DB_URL=postgresql://<username>@localhost/nodehomework?host=/tmp
-DATABASE_URL=postgresql://<username>@localhost/tasklist?host=/tmp
-TEST_DATABASE_URL=postgresql://<username>@localhost/testtasklist?host=/tmp
+DB_URL=postgresql://zesc@localhost/nodehomework?host=/tmp
+DATABASE_URL=your_neon_database_url
+TEST_DATABASE_URL=postgresql://zesc@localhost/testtasklist?host=/tmp
+JWT_SECRET=your_jwt_secret
+RECAPTCHA_SECRET=6Le-VBYtAAAAAN60MU4oWOKLLblK_4KPTdfW2_TY
+RECAPTCHA_BYPASS=your_recaptcha_secret
 ```
 
 </details>
@@ -307,6 +337,48 @@ git checkout -b assignment2
 - Usual Express files (e.g., `app.js`, `routes/`, `controllers/`, `utils/`, `models/`, `tests/`, etc.) will be present in the root or as needed for the Node/Express app.
 - `package.json`: Single package file for the whole project.
 - The repository is structured for cloud deployment.
+
+# Front-end React Application
+
+The front-end repository can be found [here](https://github.com/cesarve-dev/node-essentials-front-end)
+
+## Install dependencies
+
+Clode repo in a different foler. Then:
+
+```
+cd node-essentials-front-end
+npm install
+```
+
+# Set up .env file in fron-end folder
+
+Check .env.example for set up of variables
+
+```
+VITE_TARGET=https://node-homework-zf5p.onrender.com
+VITE_GOOGLE_CLIENT_ID=your_google_client_id
+VITE_RECAPTCHA_SITE_KEY=your_recaptcha_site_key
+```
+
+Note:
+
+- VITE_TARGET points to back-end on Render.
+- VITE_GOOGLE_CLIENT_ID must match the GOOGLE_CLIENT_ID on the back-end, otherwise singing up with google witll throw a error "unauthorized_client"
+
+# Run front-end
+
+```
+npm run dev
+```
+
+app will be available on at: http://localhost:3001
+
+## reCAPTCHA Bypass value on back-end
+
+```
+RECAPTCHA_BYPASS=YEFmSXaRh5ftzlx
+```
 
 ## Good Luck With the Class, and Happy Coding!
 
