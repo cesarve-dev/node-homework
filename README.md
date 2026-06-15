@@ -1,3 +1,26 @@
+# Project Overview and purpose
+
+This is a todo tasks React application for the front-end and Cloud databse and web server for the back-end. This allow multiple user to use the application. This project is part of Code The Dream - Node 26.2 class
+
+# Features
+
+- Google OAuth register/login: You can use your google account to register or log in into the application.
+- Register/login
+- JWT authentication
+- CSRF protection
+- reCAPTCHA verification
+
+# Tech Stack
+
+- Node.js
+- Express
+- Prisma
+- PostgreSQL (neon.tech)
+- JWT (jason web token)
+- Google OAuth
+- reCAPTCHA
+- Web server (render.com)
+
 # Getting Started with Node Development
 
 Welcome to Code the Dream’s Node/Express class! You will be learning Node.js, an implementation of the JavaScript engine that runs standalone or as a web server. This page describes how to begin. You can develop Node applications on MacOS, Linux, or Windows. If you are developing on Windows, there is no need to do development in a virtual machine, as Node development works fine in Windows native environments, but you can use the Windows Subsystem for Linux if you prefer. You will need to install:
@@ -215,11 +238,11 @@ Last thing, you need to create a _**.env**_ file in the root of the `node-homewo
 
 ```
 DB_URL=postgresql://zesc@localhost/nodehomework?host=/tmp
-DATABASE_URL=postgresql://neondb_owner:npg_a8YKTuIBgME1@ep-little-breeze-a6wf3hc4.us-west-2.aws.neon.tech/neondb?sslmode=require
+DATABASE_URL=your_neon_database_url
 TEST_DATABASE_URL=postgresql://zesc@localhost/testtasklist?host=/tmp
-JWT_SECRET=fMXqCYweFpDP8Z9gMCR9
+JWT_SECRET=your_jwt_secret
 RECAPTCHA_SECRET=6Le-VBYtAAAAAN60MU4oWOKLLblK_4KPTdfW2_TY
-RECAPTCHA_BYPASS=YEFmSXaRh5ftzlx
+RECAPTCHA_BYPASS=your_recaptcha_secret
 ```
 
 </details>
