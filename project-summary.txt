@@ -4,3 +4,9 @@ Render URL: https://node-homework-zf5p.onrender.com
 Front-end connection details in readme file
 
 Extra feauture: OAuth authentification with Google
+
+Path: /api/users/googleLogon
+Method: POST
+Request body: { code: '<authorization code>' }
+Response body if existing user: { name, csrfToken }
+Response body for new user: { user: {name, email}, csrfToken }
